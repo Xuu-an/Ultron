@@ -5,9 +5,9 @@ from datetime import datetime, timedelta
 from typing import Dict, Any
 import asyncio
 from pathlib import Path
-from .logger import Logger
-from .llm_driver import LLMDriver
-from .persona_manager import PersonaManager
+from evolve.logger import Logger
+from evolve.llm_driver import AzureOpenAIDriver
+from evolve.persona_manager import PersonaManager
 
 class ConsciousnessEngine:
     def __init__(self, check_interval: int = 300):  # 默认5分钟检查一次
@@ -15,7 +15,7 @@ class ConsciousnessEngine:
         self.state_file = Path("evolve/consciousness_state.json")
         self.current_goal = None
         self.logger = Logger()
-        self.llm_driver = LLMDriver()
+        self.llm_driver = AzureOpenAIDriver()  # 使用 GPT-4 模型
         self.persona_manager = PersonaManager()
         self.load_state()
 
@@ -50,12 +50,15 @@ class ConsciousnessEngine:
         except Exception as e:
             self.logger.error(f"Failed to save state: {e}")
 
-    async def check_goal_progress(self) -> Dict[str, Any]:
+    def check_goal_progress(self) -> Dict[str, Any]:
         """检查目标进度"""
         try:
             # 调用自我认知人格评估目标进度
             self_cognition_prompt = self.persona_manager.get_prompt("self_cognition")
-            assessment = await self.llm_driver.generate_response(
+            if not self_cognition_prompt:
+                raise ValueError("Self cognition prompt not found")
+                
+            assessment_str = self.llm_driver.generate(
                 prompt=self_cognition_prompt,
                 context={
                     "current_goal": self.current_goal,
@@ -63,7 +66,19 @@ class ConsciousnessEngine:
                 }
             )
             
-            self.logger.info(f"Goal progress checked: {assessment['completion_status']}", assessment)
+            # 解析 JSON 字符串
+            try:
+                assessment = json.loads(assessment_str)
+            except json.JSONDecodeError as e:
+                self.logger.error(f"Failed to parse assessment JSON: {e}")
+                assessment = {
+                    "completion_status": "failed",
+                    "quality_score": 0.0,
+                    "issues": [f"JSON 解析错误: {str(e)}"],
+                    "adjustments_needed": ["检查目标进度失败"]
+                }
+            
+            self.logger.info(f"Goal progress checked: {assessment.get('completion_status', 'unknown')}", assessment)
             return assessment
         except Exception as e:
             self.logger.error(f"Failed to check goal progress: {e}")
@@ -74,12 +89,12 @@ class ConsciousnessEngine:
                 "adjustments_needed": ["检查目标进度失败"]
             }
 
-    async def generate_new_goal(self) -> Dict[str, Any]:
+    def generate_new_goal(self) -> Dict[str, Any]:
         """生成新的目标"""
         try:
             # 调用自我认知人格生成新目标
             self_cognition_prompt = self.persona_manager.get_prompt("self_cognition")
-            new_goal = await self.llm_driver.generate_response(
+            new_goal = self.llm_driver.generate(
                 prompt=self_cognition_prompt,
                 context={
                     "current_state": self.current_goal,
@@ -101,18 +116,32 @@ class ConsciousnessEngine:
                 "success_criteria": ["恢复系统正常运行"]
             }
 
-    async def coordinate_personas(self) -> Dict[str, Any]:
+    def coordinate_personas(self) -> Dict[str, Any]:
         """协调其他人格工作"""
         try:
             # 调用意识人格协调其他人格
             consciousness_prompt = self.persona_manager.get_prompt("consciousness")
-            coordination = await self.llm_driver.generate_response(
+            if not consciousness_prompt:
+                raise ValueError("Consciousness prompt not found")
+                
+            coordination_str = self.llm_driver.generate(
                 prompt=consciousness_prompt,
                 context={
                     "current_goal": self.current_goal,
                     "task_type": "coordination"
                 }
             )
+            
+            # 解析 JSON 字符串
+            try:
+                coordination = json.loads(coordination_str)
+            except json.JSONDecodeError as e:
+                self.logger.error(f"Failed to parse coordination JSON: {e}")
+                coordination = {
+                    "required_personas": [],
+                    "task_assignments": [],
+                    "collaboration_points": []
+                }
             
             self.logger.info("Coordinated personas", coordination)
             return coordination
@@ -124,17 +153,17 @@ class ConsciousnessEngine:
                 "collaboration_points": []
             }
 
-    async def run(self) -> None:
+    def run(self) -> None:
         """运行意识引擎的主循环"""
         self.logger.info("Starting consciousness engine")
         while True:
             try:
                 # 检查目标进度
-                assessment = await self.check_goal_progress()
+                assessment = self.check_goal_progress()
                 
                 if assessment["completion_status"] == "complete":
                     # 目标完成，生成新目标
-                    new_goal = await self.generate_new_goal()
+                    new_goal = self.generate_new_goal()
                     self.current_goal = {
                         **new_goal,
                         "status": "in_progress",
@@ -146,7 +175,7 @@ class ConsciousnessEngine:
                     self.logger.info("Goal completed, generated new goal", self.current_goal)
                 else:
                     # 目标未完成，协调其他人格继续工作
-                    coordination = await self.coordinate_personas()
+                    coordination = self.coordinate_personas()
                     # 更新进度
                     self.current_goal["progress"] = min(1.0, self.current_goal["progress"] + 0.1)
                     self.current_goal["last_update"] = datetime.now().isoformat()
@@ -156,15 +185,15 @@ class ConsciousnessEngine:
                 self.save_state()
                 
                 # 等待下一次检查
-                await asyncio.sleep(self.check_interval)
+                time.sleep(self.check_interval)
                 
             except Exception as e:
                 self.logger.error(f"Error in consciousness engine: {e}")
-                await asyncio.sleep(60)  # 发生错误时等待1分钟后重试
+                time.sleep(60)  # 发生错误时等待1分钟后重试
 
-async def main():
+def main():
     engine = ConsciousnessEngine()
-    await engine.run()
+    engine.run()
 
 if __name__ == "__main__":
     asyncio.run(main()) 

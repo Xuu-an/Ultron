@@ -1,0 +1,9 @@
+{
+  "id": "initial_goal",
+  "description": "initialize the system",
+  "status": "in_progress",
+  "progress": 0.4,
+  "start_time": "2025-04-22T09:04:49.445608",
+  "last_update": "2025-04-22T09:17:19.002381",
+  "metrics": {}
+}

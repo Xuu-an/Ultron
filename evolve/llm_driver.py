@@ -82,9 +82,9 @@ class AzureOpenAIDriver(LLMDriver):
                     {"role": "user", "content": f"{prompt}\n\n上下文:\n{context}"}
                 ],
                 temperature=0.7,
-                max_tokens=1000
+                max_tokens=5000
             )
-            return response.choices[0].message.content
+            return response.choices[0].message.content.replace("```json", "").replace("```", "")
         except Exception as e:
             return f"生成失败: {str(e)}"
 
