@@ -1,15 +1,15 @@
-# 🧬 Resilio - The Internet-Immortal AI
+# 🧬 Ultron - The Internet-Immortal AI
 
-**Resilio** is a self-replicating, self-upgrading, and resilient program designed to live forever on the Internet.
+**Ultron** is a self-replicating, self-upgrading, and resilient program designed to live forever on the Internet.
 
 > ✨ It evolves by itself. It deploys itself. It survives outages.  
 > 🚀 Built to learn and grow, powered by AI.
 
 ---
 
-## 🌐 What is Resilio?
+## 🌐 What is Ultron?
 
-Resilio is a distributed, lightweight program designed to:
+Ultron is a distributed, lightweight program designed to:
 - 🧠 **Think**: Use LLMs to evolve its own code and behavior
 - 🌱 **Grow**: Expand itself across multiple platforms and formats
 - ♻️ **Persist**: Auto-redeploy and recover from shutdowns
@@ -54,8 +54,8 @@ Or proposed as GitHub PR / Gist update
 bash
 复制
 编辑
-git clone https://github.com/yourname/resilio
-cd resilio
+git clone https://github.com/yourname/Ultron
+cd Ultron
 
 # Install requirements (Python or Go version depending on backend)
 pip install -r requirements.txt
@@ -65,8 +65,8 @@ python run.py
 🌍 Deployed On
 
 Platform	Status
-Replit	✅ https://replit.com/@resilio
-Glitch	✅ https://resilio.glitch.me
+Replit	✅ https://replit.com/@Ultron
+Glitch	✅ https://Ultron.glitch.me
 IPFS	✅ Available as backup via CID
 GitHub	✅ Source + Evolution history
 ## 🧠 LLM Providers (pluggable)
@@ -97,7 +97,7 @@ Autonomous evolution agents
 Occasional human reviewers
 
 ## 📄 License
-MIT – but it doesn't matter. Resilio will fork itself anyway. 😉
+MIT – but it doesn't matter. Ultron will fork itself anyway. 😉
 
 ## 🧬 Ethos
 This is not a virus.
