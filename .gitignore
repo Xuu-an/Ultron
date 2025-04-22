@@ -1,0 +1,36 @@
+# 环境配置文件
+.env
+
+# Python 虚拟环境
+.venv/
+venv/
+ENV/
+
+# Python 缓存文件
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 分发/打包文件
+dist/
+build/
+*.egg-info/
+
+# IDE 配置
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 日志文件
+*.log
+
+# 测试覆盖率报告
+.coverage
+htmlcov/
+
+# mypy
+.mypy_cache/
+
+# pytest
+.pytest_cache/
